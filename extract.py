@@ -5,17 +5,13 @@ import json
 #class that is used by transform.py
 #variables for the path to the repo and the access token are recieved by transform.py when initialized
 class main():
-    def __init__(self, repo, token):
+    def __init__(self, token):
         self.baseUrl = "https://api.github.com/"
-        self.repo = repo
         self.token = token
 
-
-
-
     #connect to api and get repo information
-    def request(self):
-        url = f"{self.baseUrl}{self.repo}"
+    def request(self, repo, review):
+        url = f"{self.baseUrl}{repo}"
         #pack token into packet to be sent in request as the header
         headers = {'Authorization': 'token ' + self.token}
         response = requests.get(url, headers=headers)
@@ -25,7 +21,8 @@ class main():
             print("[Info] Repo retrieved successfuly")
             #transform to json format then send back to transform.py
             repoData = response.json()
-            main.writeJson(repoData)
+            if not review: # we don't want it to write if it is fetching reviews
+                main.writeJson(repoData)
             return repoData
         else:
             print(f"[Error] Error in request, code: {response.status_code}")
